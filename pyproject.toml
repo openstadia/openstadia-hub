@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "openstadia-hub"
+version = "0.1.0"
+description = ""
+authors = ["Daniil Utkin <daniil@utkin.tech>"]
+license = "MIT"
+readme = "README.md"
+packages = [{ include = "openstadia_hub" }]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.95.1"
+uvicorn = "^0.22.0"
+pyjwt = "^2.6.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

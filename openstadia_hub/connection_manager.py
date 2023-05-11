@@ -16,6 +16,7 @@ class ConnectionManager:
     async def connect(self, client_id: str, websocket: WebSocket):
         await websocket.accept()
         self.clients[client_id] = websocket
+        self.responses[client_id] = {}
 
     def disconnect(self, client_id: ClientId):
         self.clients.pop(client_id)

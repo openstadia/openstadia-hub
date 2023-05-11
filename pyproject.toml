@@ -10,7 +10,7 @@ packages = [{ include = "openstadia_hub" }]
 [tool.poetry.dependencies]
 python = "^3.9"
 fastapi = "^0.95.1"
-uvicorn = "^0.22.0"
+uvicorn = {extras = ["standard"], version = "^0.22.0"}
 pyjwt = "^2.6.0"
 
 

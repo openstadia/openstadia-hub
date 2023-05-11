@@ -8,9 +8,9 @@ from fastapi import (
     status,
     Depends,
     Header,
-    HTTPException
+    HTTPException,
 )
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import ValidationError
 
 from .client_manager import ClientManager
@@ -19,6 +19,8 @@ from .packet import Packet, PacketType
 from .session_description import SessionDescription
 
 app = FastAPI()
+
+app.mount("/static", StaticFiles(directory="static", html=True), name="static")
 
 
 async def get_token(
@@ -32,14 +34,6 @@ async def get_token(
 
 connection_manager = ConnectionManager()
 client_manager = ClientManager()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 
 @app.post("/offer/{client_id}")

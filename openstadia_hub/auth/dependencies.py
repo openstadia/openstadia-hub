@@ -2,9 +2,9 @@ from typing import Any
 
 from fastapi import Depends
 
-from authorization_header_elements import get_bearer_token
-from custom_exceptions import PermissionDeniedException
-from json_web_token import JsonWebToken
+from .authorization_header_elements import get_bearer_token
+from .custom_exceptions import PermissionDeniedException
+from .json_web_token import JsonWebToken
 
 
 def validate_token(token: str = Depends(get_bearer_token)):

@@ -3,8 +3,8 @@ from typing import Any
 
 import jwt
 
-from config import settings
-from custom_exceptions import BadCredentialsException, UnableCredentialsException
+from .config import settings
+from .custom_exceptions import BadCredentialsException, UnableCredentialsException
 
 
 @dataclass

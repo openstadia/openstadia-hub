@@ -12,6 +12,8 @@ python = "^3.9"
 fastapi = "^0.95.1"
 uvicorn = {extras = ["standard"], version = "^0.22.0"}
 pyjwt = "^2.6.0"
+google-auth = "^2.18.0"
+requests = "^2.31.0"
 
 
 [build-system]

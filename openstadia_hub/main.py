@@ -1,4 +1,4 @@
-from typing import Union, Annotated
+from typing import Union, Annotated, Any
 
 from fastapi import (
     FastAPI,
@@ -10,17 +10,34 @@ from fastapi import (
     Header,
     HTTPException,
 )
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from google.auth.transport import requests
+from google.oauth2 import id_token
 from pydantic import ValidationError
 
+from .auth.authorization_header_elements import get_bearer_token
 from .client_manager import ClientManager
+from .config import get_settings, Settings
 from .connection_manager import ConnectionManager
 from .packet import Packet, PacketType
 from .session_description import SessionDescription
 
 app = FastAPI()
 
+request = requests.Request()
+connection_manager = ConnectionManager()
+client_manager = ClientManager()
+
 app.mount("/static", StaticFiles(directory="static", html=True), name="static")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 async def get_token(
@@ -32,8 +49,10 @@ async def get_token(
     return authorization
 
 
-connection_manager = ConnectionManager()
-client_manager = ClientManager()
+async def get_user(token: Annotated[str, Depends(get_bearer_token)],
+                   settings: Annotated[Settings, Depends(get_settings)]) -> Any:
+    id_info = id_token.verify_oauth2_token(token, request, settings.google_client_id)
+    return id_info
 
 
 @app.post("/offer/{client_id}")
@@ -70,3 +89,19 @@ async def websocket_endpoint(websocket: WebSocket, token: Annotated[str, Depends
                 connection_manager.register_response(client_id, packet.id, packet.data)
     except WebSocketDisconnect:
         connection_manager.disconnect(client_id)
+
+
+@app.post("/servers", tags=["servers"])
+async def create_server(user: Annotated[Any, Depends(get_user)]):
+    pass
+
+
+@app.get("/servers", tags=["servers"])
+async def get_servers(user: Annotated[Any, Depends(get_user)]):
+    return []
+
+
+@app.get("/me")
+async def get_me(user: Annotated[Any, Depends(get_user)]):
+    user_id = user['sub']
+    return user

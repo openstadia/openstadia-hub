@@ -11,9 +11,10 @@ packages = [{ include = "openstadia_hub" }]
 python = "^3.9"
 fastapi = "^0.95.1"
 uvicorn = {extras = ["standard"], version = "^0.22.0"}
-pyjwt = "^2.6.0"
+pyjwt = {extras = ["crypto"], version = "^2.7.0"}
 google-auth = "^2.18.0"
 requests = "^2.31.0"
+sqlalchemy = "^2.0.16"
 
 
 [build-system]

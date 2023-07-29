@@ -1,19 +1,20 @@
 import asyncio
 import random
-from typing import Any, Optional
+from typing import Any, Optional, Dict
 
 from fastapi import WebSocket
 
-from .client import ClientId
-from .packet import Packet, PacketType, PacketId
+from openstadia_hub.schemas.packet import Packet, PacketType, PacketId, Header
+
+ClientId = int
 
 
 class ConnectionManager:
     def __init__(self):
-        self.clients: dict[str, WebSocket] = {}
+        self.clients: dict[ClientId, WebSocket] = {}
         self.responses: dict[ClientId, dict[PacketId, asyncio.Future]] = {}
 
-    async def connect(self, client_id: str, websocket: WebSocket):
+    async def connect(self, client_id: ClientId, websocket: WebSocket):
         await websocket.accept()
         self.clients[client_id] = websocket
         self.responses[client_id] = {}
@@ -35,7 +36,8 @@ class ConnectionManager:
 
         await websocket.send_text(message)
 
-    async def send_request(self, client_id: ClientId, data: Any, timeout: Optional[float] = 10) -> Any:
+    async def send_request(self, client_id: ClientId, name: str, data: Any = {},
+                           timeout: Optional[float] = None) -> Any:
         websocket = self.clients.get(client_id)
         if websocket is None:
             return None
@@ -44,13 +46,18 @@ class ConnectionManager:
         response_future = asyncio.Future()
         self.responses[client_id][packet_id] = response_future
 
-        packet = Packet(
+        header = Header(
             type=PacketType.EVENT,
-            data=data,
-            id=packet_id
+            id=packet_id,
+            name=name
         )
 
-        await websocket.send_text(packet.json())
+        packet = Packet(
+            header=header,
+            payload=data
+        )
+
+        await websocket.send_text(packet.encode())
 
         try:
             await asyncio.wait_for(response_future, timeout=timeout)
@@ -65,9 +72,12 @@ class ConnectionManager:
 
         return response
 
-    def register_response(self, client_id: ClientId, packet_id: PacketId, message: Any):
+    def register_response(self, client_id: ClientId, packet_id: PacketId, message: Dict):
         try:
             response_future = self.responses[client_id][packet_id]
             response_future.set_result(message)
         except Exception:
             print('Exception when register response')
+
+
+connection_manager = ConnectionManager()

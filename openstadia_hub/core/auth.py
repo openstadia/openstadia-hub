@@ -15,7 +15,6 @@ async def get_token(
         websocket: WebSocket,
         authorization: Annotated[Union[str, None], Header()] = None,
 ):
-    print(authorization)
     if authorization is None:
         raise WebSocketException(code=status.WS_1008_POLICY_VIOLATION)
     return authorization

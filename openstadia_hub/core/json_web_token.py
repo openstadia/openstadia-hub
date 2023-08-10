@@ -35,7 +35,6 @@ class JsonWebToken:
                 detail="Unable to verify credentials",
             )
         except jwt.exceptions.InvalidTokenError:
-            traceback.print_exc()
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Bad credentials"

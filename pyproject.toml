@@ -9,12 +9,12 @@ packages = [{ include = "openstadia_hub" }]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-fastapi = "^0.95.1"
-uvicorn = {extras = ["standard"], version = "^0.22.0"}
-pyjwt = {extras = ["crypto"], version = "^2.7.0"}
-google-auth = "^2.18.0"
+pyjwt = { extras = ["crypto"], version = "^2.7.0" }
 requests = "^2.31.0"
 sqlalchemy = "^2.0.16"
+fastapi = "^0.100.1"
+uvicorn = { extras = ["standard"], version = "^0.23.1" }
+pydantic-settings = "^2.0.2"
 
 
 [build-system]

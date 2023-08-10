@@ -1,10 +1,11 @@
-from typing import Dict
+from typing import Dict, Annotated
 
 from fastapi import APIRouter, Depends, WebSocket, WebSocketException, status, WebSocketDisconnect
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
 from openstadia_hub import crud
+from openstadia_hub.core.auth import get_token
 from openstadia_hub.core.database import get_db
 from openstadia_hub.schemas.packet import Packet, PacketType
 from openstadia_hub.services.connection import connection_manager
@@ -15,13 +16,11 @@ router = APIRouter(
 )
 
 
-# token: Annotated[str, Depends(get_token)],
 @router.websocket("/")
 async def websocket_endpoint(websocket: WebSocket,
+                             token: Annotated[str, Depends(get_token)],
                              db: Session = Depends(get_db)):
-    token = 'a'
     server = crud.get_server_by_token(db, token)
-    print(server)
 
     if server is None:
         raise WebSocketException(code=status.WS_1008_POLICY_VIOLATION)
@@ -37,7 +36,6 @@ async def websocket_endpoint(websocket: WebSocket,
 
             try:
                 packet = Packet.decode(data, Dict)
-                print(packet)
             except ValidationError:
                 print("Receive wrong packet format")
                 continue

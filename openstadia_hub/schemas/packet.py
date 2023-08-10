@@ -2,7 +2,7 @@ import enum
 import json
 from typing import Optional, Generic, TypeVar, Type
 
-from pydantic import BaseModel, parse_raw_as
+from pydantic import BaseModel, TypeAdapter
 
 PayloadT = TypeVar('PayloadT')
 PacketId = int
@@ -40,7 +40,7 @@ class Packet(BaseModel, Generic[PayloadT]):
         if len(parts) != 2:
             raise Exception('wrong number of packet parts')
 
-        header = Header.parse_raw(parts[0])
-        payload = parse_raw_as(payload_type, parts[1])
+        header = Header.model_validate_json(parts[0])
+        payload = TypeAdapter(payload_type).validate_json(parts[1])
 
         return Packet(header=header, payload=payload)

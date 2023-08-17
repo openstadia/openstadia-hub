@@ -2,9 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from openstadia_hub.api import offer, servers, users, servers_apps, servers_ws, apps
-from openstadia_hub.core.database import engine, Base
-
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 app.include_router(servers_ws.router)

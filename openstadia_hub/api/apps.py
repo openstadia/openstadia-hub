@@ -1,10 +1,8 @@
-from typing import Annotated, Any
+from fastapi import APIRouter
 
-from fastapi import APIRouter, Depends
-
-from openstadia_hub.core.auth import get_user
-from openstadia_hub.core.database import get_db, Session
-from openstadia_hub.crud.apps import get_apps
+from openstadia_hub.core.auth import DbUser
+from openstadia_hub.core.database import DbSession
+from openstadia_hub.crud.apps import get_apps_by_user_id
 
 router = APIRouter(
     prefix="/apps",
@@ -13,8 +11,5 @@ router = APIRouter(
 
 
 @router.get("/")
-async def get_user_servers_lazy(
-        user: Annotated[Any, Depends(get_user)],
-        db: Session = Depends(get_db)
-):
-    return get_apps(db=db, user_id=user.id)
+async def get_apps_by_user(user: DbUser, db: DbSession):
+    return get_apps_by_user_id(db=db, user_id=user.id)

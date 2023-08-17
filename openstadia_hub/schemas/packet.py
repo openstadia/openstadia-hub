@@ -27,9 +27,9 @@ class Packet(BaseModel, Generic[PayloadT]):
     payload: PayloadT
 
     def encode(self):
-        header = self.header.json()
+        header = self.header.model_dump_json()
         if isinstance(self.payload, BaseModel):
-            payload = self.payload.json()
+            payload = self.payload.model_dump_json()
         else:
             payload = json.dumps(self.payload)
         return header + SEPARATOR + payload

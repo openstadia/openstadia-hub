@@ -1,35 +1,30 @@
-from typing import Annotated, Any, Union
+from typing import Annotated, Any, Union, Optional
 
-from fastapi import Depends, WebSocket, Header, WebSocketException, HTTPException, status
-from fastapi.security import HTTPBearer
-from sqlalchemy.orm import Session
+from fastapi import Depends, Header, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-from openstadia_hub import crud
-from openstadia_hub.core.database import get_db
+from openstadia_hub.core.database import DbSession
+from openstadia_hub.crud.user import get_user_by_auth_id
+from openstadia_hub.models import User
 from .json_web_token import JsonWebToken
 
 get_bearer_token = HTTPBearer()
+AuthCredentials = Annotated[Optional[HTTPAuthorizationCredentials], Depends(get_bearer_token)]
+AuthHeader = Annotated[Union[str, None], Header()]
 
 
-async def get_token(
-        websocket: WebSocket,
-        authorization: Annotated[Union[str, None], Header()] = None,
-):
-    if authorization is None:
-        raise WebSocketException(code=status.WS_1008_POLICY_VIOLATION)
-    return authorization
-
-
-def validate_token(token: str = Depends(get_bearer_token)):
+def validate_token(token: AuthCredentials):
     return JsonWebToken(token.credentials).validate()
 
 
-def get_user(token: Annotated[str, Depends(validate_token)],
-             db: Session = Depends(get_db)) -> Any:
-    email = token.get('sub')
-    user = crud.get_user_by_email(db, email)
+JwtUser = Annotated[Any, Depends(validate_token)]
+
+
+def get_user(jwt_user: JwtUser, db: DbSession) -> User:
+    auth_id = jwt_user.get('sub')
+    user = get_user_by_auth_id(db, auth_id)
     if user is None:
-        raise HTTPException(status_code=403)
+        raise HTTPException(status_code=403, detail='User not found')
     return user
 
 
@@ -37,7 +32,7 @@ class PermissionsValidator:
     def __init__(self, required_permissions: list[str]):
         self.required_permissions = required_permissions
 
-    def __call__(self, token: str = Depends(validate_token)):
+    def __call__(self, token: JwtUser):
         token_permissions = token.get("permissions")
         token_permissions_set = set(token_permissions)
         required_permissions_set = set(self.required_permissions)
@@ -47,3 +42,6 @@ class PermissionsValidator:
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Permission denied"
             )
+
+
+DbUser = Annotated[User, Depends(get_user)]

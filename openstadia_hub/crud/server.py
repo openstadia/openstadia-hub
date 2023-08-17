@@ -4,8 +4,8 @@ from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from openstadia_hub import schemas
 from openstadia_hub.models import User, Server
+from openstadia_hub.schemas import server as schemas
 
 
 def get_servers(db: Session, skip: int = 0, limit: int = 100):

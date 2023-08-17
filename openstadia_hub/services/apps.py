@@ -12,8 +12,8 @@ class AppsAnswer(BaseModel):
 class AppsService:
     REQUEST_NAME = "APPS"
 
-    def __init__(self, connection_manager: ConnectionManager):
-        self.connection_manager = connection_manager
+    def __init__(self, conn_manager: ConnectionManager):
+        self.connection_manager = conn_manager
 
     async def get_apps(self, server_id: int) -> Optional[AppsAnswer]:
         apps = await self.connection_manager.send_request(server_id, self.REQUEST_NAME)

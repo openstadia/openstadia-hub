@@ -15,7 +15,19 @@ router = APIRouter(
 )
 
 
-@router.get("/", response_model=List[str])
+@router.get("/", response_model=List[App])
+async def get_apps(server_id: int,
+                   user: Annotated[User, Depends(get_user)],
+                   db: Annotated[Session, Depends(get_db)]
+                   ):
+    server = get_server_by_id(db, server_id)
+    if server not in user.servers:
+        raise HTTPException(status_code=404, detail="No such server")
+
+    return server.apps
+
+
+@router.get("/sync", response_model=List[str])
 async def get_apps(server_id: int,
                    user: Annotated[User, Depends(get_user)],
                    db: Annotated[Session, Depends(get_db)]

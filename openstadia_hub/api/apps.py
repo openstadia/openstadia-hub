@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 
-@router.get("/lazy")
+@router.get("/")
 async def get_user_servers_lazy(
         user: Annotated[Any, Depends(get_user)],
         db: Session = Depends(get_db)

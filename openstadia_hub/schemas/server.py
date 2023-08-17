@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class ServerBase(BaseModel):
@@ -10,9 +10,8 @@ class ServerCreate(ServerBase):
 
 
 class Server(ServerBase):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     token: str
     owner_id: int
-
-    class Config:
-        orm_mode = True

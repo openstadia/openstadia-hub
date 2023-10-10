@@ -19,10 +19,10 @@ router = APIRouter(
 @router.websocket("/")
 async def websocket_endpoint(
         websocket: WebSocket,
-        token: AuthHeader,
+        authorization: AuthHeader,
         db: Session = Depends(get_db)
 ):
-    server = get_server_by_token(db, token)
+    server = get_server_by_token(db, authorization)
 
     if server is None:
         raise WebSocketException(code=status.WS_1008_POLICY_VIOLATION)

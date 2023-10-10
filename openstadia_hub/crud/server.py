@@ -32,3 +32,11 @@ def create_user_server(db: Session, server: schemas.ServerCreate, user_id: int):
     db.commit()
     db.refresh(db_item)
     return db_item
+
+
+def delete_server_by_id(db: Session, server_id: int) -> Optional[Server]:
+    stmt = select(Server).filter_by(id=server_id)
+    server = db.scalars(stmt).first()
+    db.delete(server)
+    db.commit()
+    return server

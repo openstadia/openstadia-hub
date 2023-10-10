@@ -2,7 +2,6 @@ import enum
 
 from pydantic import BaseModel
 
-from .app import App
 from .session_description import SessionDescription
 
 
@@ -18,6 +17,10 @@ class Codec(BaseModel):
     bitrate: int
 
 
+class OfferApp(BaseModel):
+    name: str
+
+
 class Offer(SessionDescription):
-    app: App
+    app: OfferApp
     codec: Codec

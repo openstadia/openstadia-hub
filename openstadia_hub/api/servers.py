@@ -44,3 +44,13 @@ async def is_server_online(
 
     is_online = connection_manager.is_connected(server_id)
     return is_online
+
+
+@router.delete("/{server_id}")
+async def delete_server(
+        server_id: int, user: DbUser, db: DbSession
+):
+    if not crud.has_server_access(db, user.id, server_id):
+        raise HTTPException(status_code=404, detail="Invalid access to server")
+
+    return crud.delete_server_by_id(db, server_id)

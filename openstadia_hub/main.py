@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from openstadia_hub.api import offer, servers, users, servers_apps, servers_ws, apps

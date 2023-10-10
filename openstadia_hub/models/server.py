@@ -15,6 +15,6 @@ class Server(Base):
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
 
     owner: Mapped["User"] = relationship(back_populates="servers")
-    apps: Mapped[List["App"]] = relationship(back_populates="server")
+    apps: Mapped[List["App"]] = relationship(back_populates="server", cascade="all, delete")
 
     server_accesses: Mapped[List["ServerAccess"]] = relationship(back_populates="server")

@@ -1,11 +1,13 @@
-from typing import Annotated, Any, Union, Optional
+from typing import Annotated, Any, Union, Optional, Dict
 
+import requests
 from fastapi import Depends, Header, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from openstadia_hub.core.database import DbSession
 from openstadia_hub.crud.user import get_user_by_auth_id
 from openstadia_hub.models import User
+from .config import settings
 from .json_web_token import JsonWebToken
 
 get_bearer_token = HTTPBearer()
@@ -18,6 +20,22 @@ def validate_token(token: AuthCredentials):
 
 
 JwtUser = Annotated[Any, Depends(validate_token)]
+
+
+def get_user_info(token: AuthCredentials) -> Dict[str, Any]:
+    url = f"https://{settings.auth0_domain}/userinfo"
+    headers = {"Authorization": f"Bearer {token.credentials}"}
+
+    response = requests.get(
+        url,
+        headers=headers,
+        timeout=5.0,
+    )
+
+    return response.json()
+
+
+UserInfo = Annotated[Dict[str, Any], Depends(get_user_info)]
 
 
 def get_user(jwt_user: JwtUser, db: DbSession) -> User:

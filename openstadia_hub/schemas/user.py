@@ -1,7 +1,5 @@
 from pydantic import BaseModel, ConfigDict
 
-from .server import Server
-
 
 class UserBase(BaseModel):
     username: str
@@ -16,4 +14,4 @@ class User(UserBase):
 
     id: int
     is_active: bool
-    servers: list[Server] = []
+    email: str

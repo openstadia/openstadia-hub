@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  hub:
+    image: openstadia/hub
+    restart: always
+    expose:
+      - "8000"
+    environment:
+      AUTH0_DOMAIN: ${AUTH0_DOMAIN:?err}
+      AUTH0_AUDIENCE: ${AUTH0_AUDIENCE:?err}
+      DATABASE_URL: ${DATABASE_URL:?err}
+    networks:
+      - db
+      - proxy
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:15
+    restart: always
+    expose:
+      - "5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?err}
+      POSTGRES_DB: ${POSTGRES_DB:-openstadia}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "9080:8080"
+    networks:
+      - db
+
+  caddy:
+    image: caddy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./caddy_data:/data
+      - ./caddy_config:/config
+  networks:
+      - proxy
+
+networks:
+  proxy:
+  db:
+
+volumes:
+  postgres-data:

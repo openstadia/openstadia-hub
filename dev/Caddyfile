@@ -1,9 +1,11 @@
 app.openstadia.test {
+    log
     reverse_proxy http://host.docker.internal:5173
     tls internal
 }
 
 hub.openstadia.test {
+    log
     reverse_proxy http://host.docker.internal:8000
     tls internal
 }

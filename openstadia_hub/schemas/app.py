@@ -8,3 +8,7 @@ class App(BaseModel):
     name: str
     command: str
     server_id: int
+
+
+class AppSync(BaseModel):
+    name: str

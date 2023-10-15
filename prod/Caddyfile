@@ -1,0 +1,4 @@
+app.openstadia.com {
+    log
+    reverse_proxy hub:8000
+}

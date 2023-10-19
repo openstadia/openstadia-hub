@@ -1,4 +1,4 @@
-app.openstadia.com {
+{$HUB_HOST} {
     log
     reverse_proxy hub:8000
 }

@@ -2,11 +2,17 @@ from typing import Optional, List
 
 from pydantic import BaseModel
 
+from openstadia_hub.schemas.app import App
 from .connection import ConnectionManager, connection_manager
 
 
+class AppAnswer(BaseModel):
+    id: int
+    name: str
+
+
 class AppsAnswer(BaseModel):
-    apps: List[str]
+    apps: List[AppAnswer]
 
 
 class AppsService:
@@ -21,6 +27,20 @@ class AppsService:
             return None
 
         return AppsAnswer.model_validate(apps)
+
+
+def convert_to_apps(apps_answer: AppsAnswer, server_id: int) -> List[App]:
+    apps = []
+
+    for answer_app in apps_answer.apps:
+        app = App(
+            id=answer_app.id,
+            name=answer_app.name,
+            server_id=server_id
+        )
+        apps.append(app)
+
+    return apps
 
 
 apps_service = AppsService(connection_manager)

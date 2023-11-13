@@ -17,10 +17,6 @@ class Codec(BaseModel):
     bitrate: int
 
 
-class OfferApp(BaseModel):
-    name: str
-
-
 class Offer(SessionDescription):
-    app: OfferApp
+    app_id: int
     codec: Codec

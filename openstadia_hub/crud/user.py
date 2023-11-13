@@ -6,11 +6,13 @@ from openstadia_hub.schemas.user import UserCreate
 
 
 def get_user(db: Session, user_id: int):
-    return db.query(User).filter(User.id == user_id).first()
+    stmt = select(User).where(User.id == user_id)
+    return db.scalars(stmt).one_or_none()
 
 
 def get_user_by_email(db: Session, email: str):
-    return db.query(User).filter(User.email == email).first()
+    stmt = select(User).where(User.email == email)
+    return db.scalars(stmt).one_or_none()
 
 
 def get_user_by_auth_id(db: Session, auth_id: str):
@@ -27,10 +29,6 @@ def get_user_by_uniques(db: Session, username: str, auth_id: str, email: str):
         )
     )
     return db.scalars(stmt).first()
-
-
-def get_users(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(User).offset(skip).limit(limit).all()
 
 
 def create_user(db: Session, user: UserCreate, auth_id: str, email: str):

@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from openstadia_hub.api import offer, servers, users, servers_apps, servers_ws, apps
@@ -18,3 +18,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def allow_private_network(request: Request, call_next):
+    response = await call_next(request)
+
+    if request.headers.get('Access-Control-Request-Private-Network') == 'true':
+        response.headers["Access-Control-Allow-Private-Network"] = "true"
+
+    return response

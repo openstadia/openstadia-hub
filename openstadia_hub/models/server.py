@@ -17,4 +17,4 @@ class Server(Base):
     owner: Mapped["User"] = relationship(back_populates="servers")
     apps: Mapped[List["App"]] = relationship(back_populates="server", cascade="all, delete")
 
-    server_accesses: Mapped[List["ServerAccess"]] = relationship(back_populates="server")
+    server_accesses: Mapped[List["ServerAccess"]] = relationship(back_populates="server", cascade="all, delete")

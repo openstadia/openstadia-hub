@@ -5,8 +5,8 @@ from fastapi import APIRouter, HTTPException
 from openstadia_hub.core.auth import DbUser
 from openstadia_hub.core.database import DbSession
 from openstadia_hub.crud.server import (create_user_server, get_server_by_id, regenerate_server_token,
-                                        delete_server_by_id, get_user_servers)
-from openstadia_hub.schemas.server import Server, ServerCreate, ServerToken, ServerSettings
+                                        delete_server_by_id, get_user_servers, rename_server)
+from openstadia_hub.schemas.server import Server, ServerCreate, ServerToken, ServerSettings, ServerName
 from openstadia_hub.schemas.server import ServerRole
 from openstadia_hub.services.connection import connection_manager
 from openstadia_hub.services.server_permission import has_server_permission, ServerPermission
@@ -74,6 +74,17 @@ async def regenerate_server_token_(
     server_token = ServerToken(token=db_server.token)
 
     return server_token
+
+
+@router.post("/{server_id}/name", response_model=Server)
+async def rename_server_(
+        server_id: int, user: DbUser, db: DbSession, name: ServerName
+):
+    if not has_server_permission(db, user.id, server_id, ServerPermission.WRITE_SETTINGS):
+        raise HTTPException(status_code=404, detail="Invalid access to server")
+
+    db_server = rename_server(db, server_id, name=name.name)
+    return db_server
 
 
 @router.delete("/{server_id}", response_model=Server)

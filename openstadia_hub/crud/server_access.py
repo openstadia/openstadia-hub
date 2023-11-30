@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -18,6 +18,11 @@ def create_server_access(db: Session, user_id: int, server_id: int, role: UserSe
 def get_server_access(db: Session, user_id: int, server_id: int) -> Optional[ServerAccess]:
     stmt = select(ServerAccess).where(ServerAccess.server_id == server_id).where(ServerAccess.user_id == user_id)
     return db.scalars(stmt).one_or_none()
+
+
+def get_server_accesses(db: Session, server_id: int) -> List[ServerAccess]:
+    stmt = select(ServerAccess).where(ServerAccess.server_id == server_id)
+    return list(db.scalars(stmt).all())
 
 
 def delete_server_access(db: Session, user_id: int, server_id: int) -> Optional[ServerAccess]:

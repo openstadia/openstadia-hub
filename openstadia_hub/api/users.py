@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 
 from openstadia_hub.core.auth import DbUser, UserInfo
 from openstadia_hub.core.database import DbSession
-from openstadia_hub.crud.user import get_user_by_uniques, create_user
+from openstadia_hub.crud.user import get_user_by_uniques, create_user, get_user_by_id
 from openstadia_hub.schemas.user import User, UserCreate
 
 router = APIRouter(
@@ -13,6 +13,17 @@ router = APIRouter(
 
 @router.get("/me", response_model=User)
 async def get_me(user: DbUser):
+    return user
+
+
+@router.get("/{user_id}", response_model=User)
+async def get_user(
+        user_id: int, user: DbUser, db: DbSession
+):
+    user = get_user_by_id(db, user_id)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
     return user
 
 

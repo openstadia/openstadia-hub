@@ -2,7 +2,7 @@
 name = "openstadia-hub"
 version = "0.1.0"
 description = ""
-authors = ["Daniil Utkin <daniil@utkin.tech>"]
+authors = ["Daniil Utkin <utkin@utkin.tech>"]
 license = "MIT"
 readme = "README.md"
 packages = [{ include = "openstadia_hub" }]
@@ -12,8 +12,8 @@ python = "^3.9"
 pyjwt = { extras = ["crypto"], version = "^2.7.0" }
 requests = "^2.31.0"
 sqlalchemy = "^2.0.16"
-fastapi = "^0.100.1"
-uvicorn = { extras = ["standard"], version = "^0.23.1" }
+fastapi = "^0.104.1"
+uvicorn = {extras = ["standard"], version = "^0.24.0.post1"}
 pydantic-settings = "^2.0.2"
 alembic = "^1.11.3"
 psycopg2-binary = "^2.9.9"

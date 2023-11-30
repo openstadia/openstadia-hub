@@ -34,3 +34,7 @@ class ServerSettings(Server):
 
 class ServerToken(BaseModel):
     token: str
+
+
+class ServerName(BaseModel):
+    name: str

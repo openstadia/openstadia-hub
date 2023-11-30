@@ -52,6 +52,16 @@ def regenerate_server_token(db: Session, server_id: int) -> Optional[Server]:
     return server
 
 
+def rename_server(db: Session, server_id: int, name: str) -> Optional[Server]:
+    server = get_server_by_id(db, server_id)
+    if server is None:
+        return None
+
+    server.name = name
+    db.commit()
+    return server
+
+
 def get_user_servers(db: Session, user_id: int) -> Sequence[Row[tuple[Any, Any, Any, Any]]]:
     stmt = select(Server.id, Server.name, Server.owner_id, ServerAccess.role).join(ServerAccess).where(
         ServerAccess.user_id == user_id)

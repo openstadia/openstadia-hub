@@ -1,1 +1,1 @@
-alembic revision -m $args
+alembic revision --autogenerate -m $args

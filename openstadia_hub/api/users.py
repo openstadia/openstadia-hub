@@ -28,7 +28,7 @@ async def get_user(
 
 
 @router.post("/", response_model=User)
-def create_user(user: UserCreate, db: DbSession, jwt_user: UserInfo):
+def create_user_(user: UserCreate, db: DbSession, jwt_user: UserInfo):
     if not jwt_user.get("email_verified"):
         raise HTTPException(status_code=400, detail="Email not verified")
 
